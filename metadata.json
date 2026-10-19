@@ -1,0 +1,6 @@
+{
+  "name": "ResumeAI – AI-Powered Resume Analysis, ATS Scoring & Job Recommendation System",
+  "description": "Academic ML/NLP resume analysis platform with transparent ATS scoring, entity extraction, skill gap matching, and job recommendation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
