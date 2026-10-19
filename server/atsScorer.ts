@@ -126,7 +126,8 @@ export function calculateAtsScore(
   else if (skillCount >= 10) rawSkills = 17;
   else if (skillCount >= 6) rawSkills = 14;
   else if (skillCount >= 3) rawSkills = 9;
-  else rawSkills = 5;
+  else if (skillCount >= 1) rawSkills = 4;
+  else rawSkills = 0;
 
   const skillsMatchScore = Math.min(weights.skillsMatch, Math.round((rawSkills / 20) * weights.skillsMatch));
   if (skillCount >= 10) {
@@ -141,13 +142,14 @@ export function calculateAtsScore(
   const expCount = parsed.experience.length;
   if (expCount >= 3) rawExp += 7;
   else if (expCount >= 1) rawExp += 5;
-  else rawExp += 2;
+  else rawExp += 0;
 
   // Check bullet point detail
   const allHighlights = parsed.experience.flatMap(e => e.highlights);
   if (allHighlights.length >= 6) rawExp += 8;
   else if (allHighlights.length >= 3) rawExp += 5;
-  else rawExp += 2;
+  else if (allHighlights.length >= 1) rawExp += 2;
+  else rawExp += 0;
 
   const experienceScore = Math.min(weights.experience, Math.round((rawExp / 15) * weights.experience));
   if (allHighlights.length >= 4) {
@@ -161,7 +163,7 @@ export function calculateAtsScore(
   if (metrics.count >= 5) rawAchievements = 10;
   else if (metrics.count >= 3) rawAchievements = 8;
   else if (metrics.count >= 1) rawAchievements = 5;
-  else rawAchievements = 2;
+  else rawAchievements = 0;
 
   const achievementsScore = Math.min(weights.achievements, Math.round((rawAchievements / 10) * weights.achievements));
   if (metrics.count >= 3) {
@@ -173,12 +175,16 @@ export function calculateAtsScore(
 
   // 6. Formatting & Readability (10 pts)
   let rawFormatting = 10;
-  if (parsed.formattingFlags.hasTabularFormatting) rawFormatting -= 3;
-  if (parsed.formattingFlags.hasExcessiveSpecialChars) rawFormatting -= 2;
-  if (parsed.formattingFlags.hasPossibleTwoColumns) rawFormatting -= 2;
-  if (readability.wordCount < 250 || readability.wordCount > 1200) rawFormatting -= 2;
+  if (readability.wordCount < 30) {
+    rawFormatting = 0;
+  } else {
+    if (parsed.formattingFlags.hasTabularFormatting) rawFormatting -= 3;
+    if (parsed.formattingFlags.hasExcessiveSpecialChars) rawFormatting -= 2;
+    if (parsed.formattingFlags.hasPossibleTwoColumns) rawFormatting -= 2;
+    if (readability.wordCount < 250 || readability.wordCount > 1200) rawFormatting -= 2;
+  }
 
-  const formattingScore = Math.max(2, Math.min(weights.formatting, Math.round((rawFormatting / 10) * weights.formatting)));
+  const formattingScore = Math.max(0, Math.min(weights.formatting, Math.round((rawFormatting / 10) * weights.formatting)));
   if (rawFormatting >= 8) {
     strengths.push('Clean ATS-friendly plain text flow, free of risky parser-breaking columns or tables.');
   } else {
@@ -208,6 +214,10 @@ export function calculateAtsScore(
 
   // 8. Job Description Alignment (5 pts)
   const jobAlignmentScore = Math.min(weights.jobAlignment, Math.round(jdAlignmentScore));
+
+  if (recommendations.length === 0) {
+    recommendations.push('Maintain high metric density and customize top keywords to match each target job description.');
+  }
 
   const totalScore = structureScore + keywordScore + skillsMatchScore + experienceScore + achievementsScore + formattingScore + essentialScore + jobAlignmentScore;
 

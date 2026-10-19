@@ -96,9 +96,10 @@ CRITICAL RULES:
 1. Do NOT invent fake degrees, fake companies, fake credentials, or fake dates.
 2. Return ONLY the improved replacement text directly, with no markdown code blocks, conversational greetings, or notes.`;
 
+      const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
       const response = await Promise.race([
         ai.models.generateContent({
-          model: 'gemini-3.8-flash',
+          model: modelName,
           contents: prompt,
         }),
         new Promise<never>((_, reject) => setTimeout(() => reject(new Error('AI timeout')), 4500)),

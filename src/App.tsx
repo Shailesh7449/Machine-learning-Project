@@ -30,6 +30,7 @@ import { JobMatchCard } from './components/JobMatchCard';
 import { SkillGapCard } from './components/SkillGapCard';
 import { QualityAuditView } from './components/QualityAuditView';
 import { MethodologyPage } from './pages/MethodologyPage';
+import { BenchmarksView } from './components/BenchmarksView';
 import { SectionEditorWorkspace } from './components/SectionEditorWorkspace';
 import { JobsAndInternshipsView } from './components/JobsAndInternshipsView';
 import { ResumePreviewExport } from './components/ResumePreviewExport';
@@ -138,7 +139,7 @@ function AppContent() {
 
       {/* Main Layout: Sidebar + Content */}
       <div className="flex-1 flex w-full">
-        {analysisResult && activeTab !== 'methodology' && (
+        {analysisResult && activeTab !== 'methodology' && activeTab !== 'benchmarks' && (
           <Sidebar
             activeTab={activeTab}
             setActiveTab={setActiveTab}
@@ -148,9 +149,12 @@ function AppContent() {
           />
         )}
         
-        <main className={`flex-1 ${analysisResult && activeTab !== 'methodology' ? 'p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto w-full overflow-x-hidden' : 'w-full'}`}>
+        <main className={`flex-1 ${analysisResult && activeTab !== 'methodology' && activeTab !== 'benchmarks' ? 'p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto w-full overflow-x-hidden' : 'w-full'}`}>
           {/* VIEW 1: Methodology Page */}
           {activeTab === 'methodology' && <MethodologyPage />}
+
+          {/* VIEW 1.5: Academic Benchmarks Suite */}
+          {activeTab === 'benchmarks' && <BenchmarksView />}
 
           {/* VIEW 2: Independent Jobs & Internships View (accessible with or without uploaded resume) */}
           {activeTab === 'jobs' && (
@@ -163,7 +167,7 @@ function AppContent() {
           )}
 
           {/* VIEW 3: Landing / Upload OR Dashboard Views */}
-          {activeTab !== 'methodology' && activeTab !== 'jobs' && (
+          {activeTab !== 'methodology' && activeTab !== 'jobs' && activeTab !== 'benchmarks' && (
             <div className="mx-auto w-full">
               {!analysisResult ? (
                 /* Landing & Upload View */

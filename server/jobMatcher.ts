@@ -182,20 +182,21 @@ export function matchResumeWithJob(
   const keywordMatchScore = Math.round((matchedKeywords.length / (jdParsed.importantKeywords.length || 1)) * 100);
 
   // 4. Experience & Education Match
-  let expScore = 80;
-  if (jdParsed.experienceRequiredYears > 0) {
-    const resumeYearsEst = Math.min(10, Math.max(1, resumeParsed.experience.length * 1.8));
+  let expScore = 70;
+  if (resumeParsed.experience.length === 0) {
+    expScore = jdParsed.experienceRequiredYears > 0 ? 0 : 40;
+  } else if (jdParsed.experienceRequiredYears > 0) {
+    const resumeYearsEst = Math.min(10, resumeParsed.experience.length * 1.8);
     if (resumeYearsEst >= jdParsed.experienceRequiredYears) {
       expScore = 95;
     } else {
       expScore = Math.round((resumeYearsEst / jdParsed.experienceRequiredYears) * 80);
     }
+  } else {
+    expScore = 85;
   }
 
-  let eduScore = 85;
-  if (resumeParsed.education.length > 0) {
-    eduScore = 95;
-  }
+  let eduScore = resumeParsed.education.length > 0 ? 95 : 20;
 
   // Weighted Overall Compatibility
   // 35% Skills + 25% Semantic Cosine + 20% Keywords + 10% Experience + 10% Education
@@ -208,7 +209,7 @@ export function matchResumeWithJob(
   );
 
   return {
-    overallMatchScore: Math.min(99, Math.max(20, overall)),
+    overallMatchScore: Math.min(100, Math.max(0, overall)),
     semanticSimilarityScore,
     keywordMatchScore,
     skillMatchScore,

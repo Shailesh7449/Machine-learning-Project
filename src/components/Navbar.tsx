@@ -28,7 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onNewAn
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div
-            onClick={() => setActiveTab('analyzer')}
+            onClick={() => setActiveTab('dashboard')}
             className="flex items-center gap-3 cursor-pointer group select-none"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-emerald-400 p-0.5 shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
@@ -63,6 +63,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onNewAn
             >
               <Briefcase className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
               <span>Jobs & Internships</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('benchmarks')}
+              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+                activeTab === 'benchmarks'
+                  ? 'bg-violet-50 dark:bg-slate-800 text-violet-700 dark:text-white border border-violet-200 dark:border-slate-700 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+              }`}
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400" />
+              <span>Model Benchmarks</span>
             </button>
 
             <button

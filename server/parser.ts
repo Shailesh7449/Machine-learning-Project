@@ -19,7 +19,11 @@ export type { PersonalInfo, EducationEntry, ExperienceEntry, InternshipEntry, Pr
  * Robust document text extraction for PDF & DOCX
  */
 export async function extractDocumentText(buffer: Buffer, mimetype: string, originalname: string): Promise<string> {
-  const ext = originalname.toLowerCase().split('.').pop() || '';
+  if (!buffer || buffer.length === 0) {
+    throw new Error('Uploaded file is empty. Please attach a valid PDF or DOCX file.');
+  }
+
+  const ext = (originalname || '').toLowerCase().split('.').pop() || '';
 
   if (mimetype.includes('pdf') || ext === 'pdf') {
     try {
@@ -33,7 +37,7 @@ export async function extractDocumentText(buffer: Buffer, mimetype: string, orig
     } catch (err: any) {
       // Fallback: Attempt simple ASCII string extraction if binary stream permits
       const asciiMatch = buffer.toString('utf-8').replace(/[^\x20-\x7E\n]/g, ' ');
-      const candidateLines = asciiMatch.split('\n').filter(l => l.trim().length > 10);
+      const candidateLines = asciiMatch.split('\n').filter(l => l.trim().length > 10 && /[a-zA-Z]{3,}/.test(l));
       if (candidateLines.length > 5) {
         return cleanText(candidateLines.join('\n'));
       }
@@ -77,11 +81,13 @@ export function extractPersonalInfo(text: string): PersonalInfo {
   const phone = phoneMatch ? phoneMatch[0] : 'Not detected';
 
   // LinkedIn
-  const linkedinMatch = text.match(/(?:linkedin\.com\/in\/|linkedin:\s*)([a-zA-Z0-9_-]+)/i);
+  const linkedinMatch = text.match(/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/([a-zA-Z0-9_-]+)/i) ||
+                        text.match(/linkedin:\s*(?:https?:\/\/)?(?:www\.)?(?:linkedin\.com\/in\/)?([a-zA-Z0-9_-]+)/i);
   const linkedin = linkedinMatch ? `linkedin.com/in/${linkedinMatch[1]}` : (text.toLowerCase().includes('linkedin') ? 'LinkedIn profile detected' : 'Not detected');
 
   // GitHub
-  const githubMatch = text.match(/(?:github\.com\/|github:\s*)([a-zA-Z0-9_-]+)/i);
+  const githubMatch = text.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/([a-zA-Z0-9_-]+)/i) ||
+                      text.match(/github:\s*(?:https?:\/\/)?(?:www\.)?(?:github\.com\/)?([a-zA-Z0-9_-]+)/i);
   const github = githubMatch ? `github.com/${githubMatch[1]}` : (text.toLowerCase().includes('github') ? 'GitHub profile detected' : 'Not detected');
 
   // Portfolio
@@ -395,7 +401,7 @@ export function segmentResumeSections(text: string): ParsedSections {
   return {
     rawText: text,
     personal,
-    summary: sections.summary.join(' ') || (personal.name !== 'Not detected' ? '' : 'Not detected'),
+    summary: sections.summary.join(' ').trim() || 'Not detected',
     education: educationEntries,
     experience: experienceEntries,
     internships: internshipEntries,

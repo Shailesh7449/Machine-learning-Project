@@ -141,7 +141,7 @@ export function recommendJobRoles(
       degreeRelevance = 5;
     }
 
-    const totalRaw = Math.min(98, Math.round(coreScore + optionalScore + projectRelevance + degreeRelevance));
+    const totalRaw = Math.min(100, Math.round(coreScore + optionalScore + projectRelevance + degreeRelevance));
 
     // Convert skill IDs to formatted names
     const matchedSkillNames = [...matchedCore, ...matchedOptional].map(id => {
@@ -159,7 +159,7 @@ export function recommendJobRoles(
     recommendations.push({
       roleId: role.id,
       roleTitle: role.title,
-      matchPercentage: Math.max(25, totalRaw),
+      matchPercentage: Math.min(100, Math.max(0, totalRaw)),
       whyFits,
       matchedSkills: matchedSkillNames,
       missingSkills: missingSkillNames,

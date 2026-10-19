@@ -137,10 +137,21 @@ export function computeReadability(text: string): {
   avgSentenceLength: number;
   interpretation: string;
 } {
+  if (!text || text.trim().length === 0) {
+    return {
+      readingEase: 0,
+      gradeLevel: 0,
+      wordCount: 0,
+      sentenceCount: 0,
+      avgSentenceLength: 0,
+      interpretation: 'No text content',
+    };
+  }
+
   const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 3);
   const sentenceCount = Math.max(1, sentences.length);
   const words = text.split(/\s+/).filter(w => w.trim().length > 0);
-  const wordCount = Math.max(1, words.length);
+  const wordCount = words.length;
 
   let totalSyllables = 0;
   for (const w of words) {
@@ -182,7 +193,7 @@ export function detectQuantifiableMetrics(text: string): {
   densityPercentage: number;
 } {
   const bulletLines = text.split('\n').filter(line => line.trim().length > 15);
-  const metricRegex = /(\b\d+(\.\d+)?%\b|\$\d+[\d,]*(\.\d+)?[kmb]?\b|\b\d+x\b|\breduced\s+by\s+\d+|\bincreased\s+by\s+\d+|\b\d+\+\s+(users|clients|engineers|projects|microservices|requests|features|rps)\b|\b\d+ms\b|\b\d+\s*k\b|\b\d+\s*m\b|\b\d+\s*(percent|growth|saving))/i;
+  const metricRegex = /(?:\b\d+(?:\.\d+)?%|(?:\$|usd\s*)\d+[\d,]*(?:\.\d+)?[kmb]?\b|\b\d+x\b|\b\d+[\d,]*\+?\s*(?:users|clients|engineers|projects|microservices|requests|features|rps|queries|events)\b|\breduced\s+by\s+\d+|\bincreased\s+by\s+\d+|\b\d+ms\b|\b\d+\s*[kmb]\b|\b\d+\s*(?:percent|growth|saving))/i;
 
   const matchedLines: string[] = [];
   for (const line of bulletLines) {

@@ -163,7 +163,7 @@ export const ExtractedInfoView: React.FC<ExtractedInfoViewProps> = ({ parsedSect
             
             {mlInsights.extractedSkillsML && mlInsights.extractedSkillsML.length > 0 && (
               <div className="bg-white/60 dark:bg-slate-900/60 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
-                <span className="text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider block mb-2">ML Skill Extraction (Random Forest)</span>
+                <span className="text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider block mb-2">ML Skill Extraction (Character N-Gram TF-IDF + Classifier)</span>
                 <div className="flex flex-wrap gap-1.5">
                   {mlInsights.extractedSkillsML.slice(0, 15).map((skill, i) => (
                     <span key={i} className="text-xs px-2.5 py-1 rounded-md border font-medium text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-500/30 bg-purple-50 dark:bg-purple-500/10">
