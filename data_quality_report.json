@@ -1,0 +1,109 @@
+{
+  "dataset_metadata": {
+    "filepath": "data/UpdatedResumeDataSet.csv",
+    "total_raw_records": 962,
+    "deduplicated_unique_records": 166,
+    "duplicate_records_removed": 796,
+    "duplication_rate_percent": 82.74,
+    "conflicting_labels_count": 0,
+    "null_values": {
+      "Category": 0,
+      "Resume": 0
+    },
+    "num_categories": 25
+  },
+  "duplication_distribution": {
+    "min_replications": 1,
+    "max_replications": 18,
+    "mean_replications": 5.8,
+    "median_replications": 6.0
+  },
+  "class_balance_analysis": {
+    "imbalance_ratio": 4.33,
+    "max_class": {
+      "category": "Java Developer",
+      "count": 13
+    },
+    "min_class": {
+      "category": "PMO",
+      "count": 3
+    },
+    "shannon_entropy_ratio": 0.9816,
+    "class_distribution_raw": {
+      "Java Developer": 84,
+      "Testing": 70,
+      "DevOps Engineer": 55,
+      "Python Developer": 48,
+      "Web Designing": 45,
+      "HR": 44,
+      "Hadoop": 42,
+      "Sales": 40,
+      "Data Science": 40,
+      "Mechanical Engineer": 40,
+      "ETL Developer": 40,
+      "Blockchain": 40,
+      "Operations Manager": 40,
+      "Arts": 36,
+      "Database": 33,
+      "Health and fitness": 30,
+      "PMO": 30,
+      "Electrical Engineering": 30,
+      "Business Analyst": 28,
+      "DotNet Developer": 28,
+      "Automation Testing": 26,
+      "Network Security Engineer": 25,
+      "Civil Engineer": 24,
+      "SAP Developer": 24,
+      "Advocate": 20
+    },
+    "class_distribution_dedup": {
+      "Java Developer": 13,
+      "Database": 11,
+      "Advocate": 10,
+      "HR": 10,
+      "Data Science": 10,
+      "Automation Testing": 7,
+      "DevOps Engineer": 7,
+      "Testing": 7,
+      "DotNet Developer": 7,
+      "Hadoop": 7,
+      "SAP Developer": 6,
+      "Python Developer": 6,
+      "Health and fitness": 6,
+      "Civil Engineer": 6,
+      "Arts": 6,
+      "Business Analyst": 6,
+      "Sales": 5,
+      "Blockchain": 5,
+      "Mechanical Engineer": 5,
+      "ETL Developer": 5,
+      "Electrical Engineering": 5,
+      "Network Security Engineer": 5,
+      "Web Designing": 4,
+      "Operations Manager": 4,
+      "PMO": 3
+    }
+  },
+  "near_duplicate_analysis": {
+    "similarity_threshold": 0.8,
+    "total_near_duplicate_pairs": 0,
+    "cross_category_near_duplicates": [],
+    "same_category_near_duplicates": []
+  },
+  "document_length_statistics": {
+    "words": {
+      "min": 19,
+      "max": 2062,
+      "mean": 407.3,
+      "median": 320.0,
+      "std": 361.8
+    },
+    "characters": {
+      "min": 122,
+      "max": 13901,
+      "mean": 2793.5,
+      "median": 2194.0,
+      "std": 2494.0
+    }
+  }
+}

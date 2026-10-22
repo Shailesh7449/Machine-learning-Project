@@ -1,0 +1,13 @@
+resume_id,resume_domain,job_id,job_title,ground_truth_relevance,alignment_type,keyword_jaccard_score,skill_jaccard_score,tfidf_cosine_score,resumeai_hybrid_score
+RES-01,Full Stack Web Development,JD-01,Senior Full Stack React/Node Engineer,2,Strongly Aligned,33.3,70.0,40.2,72.0
+RES-01,Full Stack Web Development,JD-02,Lead Machine Learning Scientist,0,Cross-Domain,11.1,0.0,6.6,24.4
+RES-01,Full Stack Web Development,JD-03,Cloud DevOps Infrastructure Engineer,0,Cross-Domain,6.1,0.0,1.0,21.5
+RES-02,Machine Learning & AI,JD-01,Senior Full Stack React/Node Engineer,0,Cross-Domain,9.6,0.0,5.4,23.0
+RES-02,Machine Learning & AI,JD-02,Lead Machine Learning Scientist,2,Strongly Aligned,46.2,75.0,53.0,77.8
+RES-02,Machine Learning & AI,JD-03,Cloud DevOps Infrastructure Engineer,0,Cross-Domain,14.0,11.8,8.3,36.2
+RES-03,DevOps & Cloud Engineering,JD-01,Senior Full Stack React/Node Engineer,0,Cross-Domain,8.2,0.0,2.2,21.9
+RES-03,DevOps & Cloud Engineering,JD-02,Lead Machine Learning Scientist,0,Cross-Domain,15.2,13.3,9.1,33.8
+RES-03,DevOps & Cloud Engineering,JD-03,Cloud DevOps Infrastructure Engineer,2,Strongly Aligned,40.6,87.5,48.3,76.4
+RES-04,Non-Technical / Administrative,JD-01,Senior Full Stack React/Node Engineer,0,Unrelated / Non-Technical,8.3,0.0,2.0,9.9
+RES-04,Non-Technical / Administrative,JD-02,Lead Machine Learning Scientist,0,Unrelated / Non-Technical,8.3,0.0,2.7,10.2
+RES-04,Non-Technical / Administrative,JD-03,Cloud DevOps Infrastructure Engineer,0,Unrelated / Non-Technical,7.3,0.0,1.0,9.6

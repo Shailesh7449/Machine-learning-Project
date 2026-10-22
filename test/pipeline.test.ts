@@ -396,6 +396,68 @@ async function runSuite() {
     }
   })();
 
+  // -------------------------------------------------------------
+  // SUITE 12: Regression Suite for Audited Bugs & Edge Cases
+  // -------------------------------------------------------------
+  console.log('\nSuite 12: Regression Tests for Audited Bugs & Edge Cases');
+  
+  await it('Regression: rapid sequential ML inference should resolve with high-throughput warm latency', async () => {
+    const t0 = Date.now();
+    for (let i = 0; i < 3; i++) {
+      const res = await runMLTask('classify_resume', {
+        text: `Software engineer ${i} working on Java Spring Boot microservices and PostgreSQL database.`
+      });
+      assert(res && typeof res.category === 'string');
+      assert.strictEqual(res.category, 'Java Developer');
+    }
+    const elapsed = Date.now() - t0;
+    console.log(`      3 warm ML requests completed in ${elapsed}ms (avg ${Math.round(elapsed/3)}ms/req)`);
+    assert(elapsed < 1500, `Expected warm sequential inference to be fast, took ${elapsed}ms`);
+  })();
+
+  await it('Regression: ML classification category must strictly belong to official 25 dataset classes', async () => {
+    const OFFICIAL_CLASSES = [
+      'Advocate', 'Arts', 'Automation Testing', 'Blockchain', 'Business Analyst',
+      'Civil Engineer', 'Data Science', 'Database', 'DevOps Engineer', 'DotNet Developer',
+      'ETL Developer', 'Electrical Engineering', 'HR', 'Hadoop', 'Health and fitness',
+      'Java Developer', 'Mechanical Engineer', 'Network Security Engineer', 'Operations Manager',
+      'PMO', 'Python Developer', 'SAP Developer', 'Sales', 'Testing', 'Web Designing'
+    ];
+    const res = await runMLTask('classify_resume', {
+      text: 'Linux administrator specializing in Docker containers, Kubernetes clusters, and Terraform scripts.'
+    });
+    assert(OFFICIAL_CLASSES.includes(res.category), `Unexpected category "${res.category}" not in 25 official classes`);
+  })();
+
+  await it('Regression: plain text (.txt) document extraction should extract clean text properly', async () => {
+    const sampleTxt = 'Alice Developer\nEmail: alice@code.com\nSpecializes in Python, Django, and Docker.';
+    const extracted = await extractDocumentText(Buffer.from(sampleTxt, 'utf-8'), 'text/plain', 'developer.txt');
+    assert(extracted.includes('Alice Developer'));
+    assert(extracted.includes('Python'));
+  })();
+
+  await it('Regression: ATS scoring handles extreme resumes with zero skills, zero experience without NaN or exceptions', () => {
+    const emptyParsed = segmentResumeSections('Unrecognized gibberish xyz abc 12345');
+    const scoreRes = calculateAtsScore(emptyParsed, [], 0, DEFAULT_WEIGHTS);
+    assert(!isNaN(scoreRes.overallScore), 'Overall score must not be NaN');
+    assert(scoreRes.overallScore >= 0 && scoreRes.overallScore <= 100);
+    assert(!isNaN(scoreRes.categoryScores.skillsMatch.score));
+    assert(!isNaN(scoreRes.categoryScores.experience.score));
+    assert(!isNaN(scoreRes.categoryScores.achievements.score));
+  })();
+
+  await it('Regression: Job matcher transparently identifies missing skills and partial matches', () => {
+    const { matchedSkills } = extractAllTaxonomySkills('Frontend Developer specializing in React and JavaScript.');
+    const resumeSections = segmentResumeSections('Frontend Developer specializing in React and JavaScript.');
+    const jdText = 'Target Role: Frontend Engineer. Required: Vue, JavaScript, Kubernetes.';
+    const match = matchResumeWithJob(resumeSections, matchedSkills, jdText);
+    
+    assert(match.matchingSkills.includes('JavaScript'), 'Expected JavaScript to be matched');
+    assert(match.missingSkills.includes('Kubernetes') || match.partialSkills.includes('Vue.js') || match.missingSkills.includes('Vue.js'));
+    assert(Array.isArray(match.skillGapList));
+    assert(match.overallMatchScore >= 0 && match.overallMatchScore <= 100);
+  })();
+
   console.log('\n================================================================');
   console.log(`   Final Summary: ${passedCount} PASSED, ${failedCount} FAILED`);
   console.log('================================================================\n');

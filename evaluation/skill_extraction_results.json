@@ -1,0 +1,219 @@
+{
+  "benchmark_samples_count": 10,
+  "total_gold_standard_skills": 35,
+  "total_extracted_skills": 35,
+  "true_positives": 35,
+  "false_positives": 0,
+  "false_negatives": 0,
+  "overall_precision": 1.0,
+  "overall_recall": 1.0,
+  "overall_f1_score": 1.0,
+  "sample_breakdown": [
+    {
+      "id": "TEST-01",
+      "description": "Full-Stack Web snippet with modern TypeScript & React",
+      "expected_skills": [
+        "nextjs",
+        "nodejs",
+        "postgresql",
+        "react",
+        "typescript"
+      ],
+      "extracted_skills": [
+        "nextjs",
+        "nodejs",
+        "postgresql",
+        "react",
+        "typescript"
+      ],
+      "true_positives": 5,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "id": "TEST-02",
+      "description": "DevOps & Cloud architecture with acronyms (k8s, aws, iac)",
+      "expected_skills": [
+        "aws",
+        "docker",
+        "kubernetes",
+        "terraform"
+      ],
+      "extracted_skills": [
+        "aws",
+        "docker",
+        "kubernetes",
+        "terraform"
+      ],
+      "true_positives": 4,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "id": "TEST-03",
+      "description": "Data Science & Deep Learning with PyTorch and Pandas",
+      "expected_skills": [
+        "deep_learning",
+        "machine_learning",
+        "numpy",
+        "pandas",
+        "pytorch",
+        "scikit_learn",
+        "tensorflow"
+      ],
+      "extracted_skills": [
+        "deep_learning",
+        "machine_learning",
+        "numpy",
+        "pandas",
+        "pytorch",
+        "scikit_learn",
+        "tensorflow"
+      ],
+      "true_positives": 7,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "id": "TEST-04",
+      "description": "Substring collision defense test (trust vs rust, cat vs c, java vs javascript)",
+      "expected_skills": [
+        "javascript",
+        "rust"
+      ],
+      "extracted_skills": [
+        "javascript",
+        "rust"
+      ],
+      "true_positives": 2,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "id": "TEST-05",
+      "description": "Punctuation-sensitive languages (C++, C#, .NET)",
+      "expected_skills": [
+        "cpp",
+        "csharp",
+        "sql"
+      ],
+      "extracted_skills": [
+        "cpp",
+        "csharp",
+        "sql"
+      ],
+      "true_positives": 3,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "id": "TEST-06",
+      "description": "Python web frameworks with aliases (py, fast api, django)",
+      "expected_skills": [
+        "django",
+        "fastapi",
+        "python"
+      ],
+      "extracted_skills": [
+        "django",
+        "fastapi",
+        "python"
+      ],
+      "true_positives": 3,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "id": "TEST-07",
+      "description": "Non-technical control snippet with zero technical skills",
+      "expected_skills": [],
+      "extracted_skills": [],
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "id": "TEST-08",
+      "description": "Case insensitivity and capitalization variations",
+      "expected_skills": [
+        "bash",
+        "docker",
+        "golang",
+        "kubernetes",
+        "postgresql",
+        "python",
+        "redis"
+      ],
+      "extracted_skills": [
+        "bash",
+        "docker",
+        "golang",
+        "kubernetes",
+        "postgresql",
+        "python",
+        "redis"
+      ],
+      "true_positives": 7,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "id": "TEST-09",
+      "description": "Java Enterprise stack with Spring Boot and MySQL",
+      "expected_skills": [
+        "java",
+        "mysql",
+        "redis",
+        "spring_boot"
+      ],
+      "extracted_skills": [
+        "java",
+        "mysql",
+        "redis",
+        "spring_boot"
+      ],
+      "true_positives": 4,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "id": "TEST-10",
+      "description": "Empty and whitespace malformed inputs",
+      "expected_skills": [],
+      "extracted_skills": [],
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    }
+  ]
+}

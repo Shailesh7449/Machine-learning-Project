@@ -1,13 +1,17 @@
 """
 ResumeAI - Production Model Inference Engine
 Provides high-performance, deterministic model inference for:
-  1. Resume Category Classification (TF-IDF + LinearSVC)
+  1. Resume Category Classification (TF-IDF + RidgeClassifier / LinearSVC)
   2. Skill Extraction (TF-IDF + LogisticRegression)
-Can be invoked as a CLI script or imported as a Python module.
+Supports:
+  - Persistent Daemon Mode (--daemon) via line-by-line stdin/stdout for sub-10ms response latency
+  - Single-shot JSON via stdin (--json)
+  - CLI argument mode (--task <task> --text <text>)
 """
 
 import sys
 import os
+import re
 import json
 import argparse
 import joblib
@@ -20,6 +24,22 @@ _RESUME_CLF = None
 _CLASS_LABELS = None
 _SKILL_VEC = None
 _SKILL_CLF = None
+
+def clean_resume_text(text: str) -> str:
+    """Standardizes and normalizes resume text for feature extraction (identical to training)."""
+    if not isinstance(text, str):
+        return ""
+    # Remove URLs
+    text = re.sub(r'https?://\S+|www\.\S+', ' ', text)
+    # Remove Email addresses
+    text = re.sub(r'\S+@\S+', ' ', text)
+    # Remove phone numbers
+    text = re.sub(r'\+?\d[\d -]{8,}\d', ' ', text)
+    # Remove extra punctuation but keep tech-relevant symbols like c++, c#, .net, node.js
+    text = re.sub(r'[^a-zA-Z0-9+#.-]', ' ', text)
+    # Normalize whitespaces
+    text = re.sub(r'\s+', ' ', text).strip().lower()
+    return text
 
 def load_resume_models():
     global _RESUME_VEC, _RESUME_CLF, _CLASS_LABELS
@@ -51,8 +71,16 @@ def classify_resume(text: str):
             "topAlternatives": []
         }
     
-    vec, clf, _ = load_resume_models()
-    X = vec.transform([text])
+    cleaned = clean_resume_text(text)
+    if not cleaned:
+        return {
+            "category": "Unknown",
+            "confidence": 0.0,
+            "topAlternatives": []
+        }
+    
+    vec, clf, classes = load_resume_models()
+    X = vec.transform([cleaned])
     pred = clf.predict(X)[0]
     
     top_alternatives = []
@@ -81,13 +109,13 @@ def classify_resume(text: str):
 
 def extract_skills_ml(phrases: list[str], threshold: float = 0.5):
     if not phrases:
-        return {"skills": []}
+        return {"skills": [], "detailedSkills": []}
         
     vec, clf = load_skill_models()
     # Filter empty phrases
     clean_phrases = [p.strip() for p in phrases if p and p.strip() and len(p.strip()) > 1]
     if not clean_phrases:
-        return {"skills": []}
+        return {"skills": [], "detailedSkills": []}
         
     X = vec.transform(clean_phrases)
     probs = clf.predict_proba(X)[:, 1] if hasattr(clf, "predict_proba") else clf.predict(X)
@@ -109,12 +137,47 @@ def extract_skills_ml(phrases: list[str], threshold: float = 0.5):
         "detailedSkills": skills
     }
 
+def run_daemon():
+    """Runs high-throughput line-by-line JSON stream for sub-10ms IPC latency."""
+    # Warm-up model caches
+    load_resume_models()
+    load_skill_models()
+    # Signal readiness to parent process
+    sys.stdout.write(json.dumps({"status": "ready"}) + "\n")
+    sys.stdout.flush()
+    
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            req = json.loads(line)
+            task = req.get("task")
+            if task == "classify_resume":
+                result = classify_resume(req.get("text", ""))
+            elif task == "extract_skills":
+                result = extract_skills_ml(req.get("phrases", []))
+            elif task == "ping":
+                result = {"status": "pong"}
+            else:
+                result = {"error": f"Unknown task '{task}'"}
+            sys.stdout.write(json.dumps(result) + "\n")
+            sys.stdout.flush()
+        except Exception as e:
+            sys.stdout.write(json.dumps({"error": str(e)}) + "\n")
+            sys.stdout.flush()
+
 def main():
     parser = argparse.ArgumentParser(description="ResumeAI ML Inference")
     parser.add_argument("--task", choices=["classify_resume", "extract_skills"], help="Task to perform")
     parser.add_argument("--text", type=str, default="", help="Input text for classification")
     parser.add_argument("--json", action="store_true", help="Read JSON payload from stdin")
+    parser.add_argument("--daemon", action="store_true", help="Run in continuous daemon mode via stdin/stdout")
     args = parser.parse_args()
+
+    if args.daemon:
+        run_daemon()
+        return
 
     if args.json:
         raw_input = sys.stdin.read()

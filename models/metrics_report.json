@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-20T02:06:31.756755",
+  "timestamp": "2026-10-23T02:14:46.386274",
   "sklearn_version": "1.4.2",
   "resume_classifier": {
     "dataset_summary": {
@@ -40,6 +40,33 @@
     },
     "model_selection": {
       "candidate_cv_scores": {
+        "RidgeClassifier (Champion)": {
+          "mean_accuracy": 0.8787878787878788,
+          "std_accuracy": 0.028345889293741953,
+          "fold_scores": [
+            0.9090909090909091,
+            0.8863636363636364,
+            0.8409090909090909
+          ]
+        },
+        "LinearSVC": {
+          "mean_accuracy": 0.8636363636363636,
+          "std_accuracy": 0.0490965204424838,
+          "fold_scores": [
+            0.9090909090909091,
+            0.8863636363636364,
+            0.7954545454545454
+          ]
+        },
+        "ComplementNB": {
+          "mean_accuracy": 0.8409090909090908,
+          "std_accuracy": 0.03711348095126028,
+          "fold_scores": [
+            0.8863636363636364,
+            0.8409090909090909,
+            0.7954545454545454
+          ]
+        },
         "MultinomialNB (Baseline)": {
           "mean_accuracy": 0.6439393939393939,
           "std_accuracy": 0.07499617376220961,
@@ -50,20 +77,11 @@
           ]
         },
         "LogisticRegression": {
-          "mean_accuracy": 0.3409090909090909,
-          "std_accuracy": 0.03711348095126026,
+          "mean_accuracy": 0.8409090909090908,
+          "std_accuracy": 0.0490965204424838,
           "fold_scores": [
-            0.38636363636363635,
-            0.29545454545454547,
-            0.3409090909090909
-          ]
-        },
-        "LinearSVC": {
-          "mean_accuracy": 0.8484848484848485,
-          "std_accuracy": 0.05669177858748396,
-          "fold_scores": [
-            0.9090909090909091,
             0.8636363636363636,
+            0.8863636363636364,
             0.7727272727272727
           ]
         },
@@ -77,14 +95,14 @@
           ]
         }
       },
-      "champion_model": "LinearSVC"
+      "champion_model": "RidgeClassifier (Champion)"
     },
     "test_metrics": {
-      "accuracy": 0.8823529411764706,
-      "macro_f1": 0.8209523809523809,
-      "weighted_f1": 0.8501400560224088,
-      "macro_precision": 0.81,
-      "macro_recall": 0.86,
+      "accuracy": 0.9117647058823529,
+      "macro_f1": 0.8742857142857141,
+      "weighted_f1": 0.8893557422969187,
+      "macro_precision": 0.87,
+      "macro_recall": 0.9,
       "classification_report": {
         "Advocate": {
           "precision": 1.0,
@@ -111,9 +129,9 @@
           "support": 1.0
         },
         "Business Analyst": {
-          "precision": 0.5,
+          "precision": 1.0,
           "recall": 1.0,
-          "f1-score": 0.6666666666666666,
+          "f1-score": 1.0,
           "support": 1.0
         },
         "Civil Engineer": {
@@ -201,9 +219,9 @@
           "support": 1.0
         },
         "PMO": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
           "support": 1.0
         },
         "Python Developer": {
@@ -236,17 +254,17 @@
           "f1-score": 0.0,
           "support": 1.0
         },
-        "accuracy": 0.8823529411764706,
+        "accuracy": 0.9117647058823529,
         "macro avg": {
-          "precision": 0.81,
-          "recall": 0.86,
-          "f1-score": 0.8209523809523809,
+          "precision": 0.87,
+          "recall": 0.9,
+          "f1-score": 0.8742857142857141,
           "support": 34.0
         },
         "weighted avg": {
-          "precision": 0.8455882352941176,
-          "recall": 0.8823529411764706,
-          "f1-score": 0.8501400560224088,
+          "precision": 0.8897058823529411,
+          "recall": 0.9117647058823529,
+          "f1-score": 0.8893557422969187,
           "support": 34.0
         }
       },
@@ -769,22 +787,22 @@
           0,
           0,
           0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
           1,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
           0,
           0,
           0,

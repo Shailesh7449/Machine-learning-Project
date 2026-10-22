@@ -1,7 +1,7 @@
 """
 ResumeAI - Production-Grade ML Training and Evaluation Pipeline
 Trains:
-  1. Resume Category Classifier (TF-IDF + LinearSVC / MultinomialNB / LogisticRegression / RandomForest)
+  1. Resume Category Classifier (TF-IDF + RidgeClassifier / LinearSVC / ComplementNB)
      Evaluated with Stratified K-Fold CV on training split and evaluated on held-out test split.
   2. Skill Extraction Classifier (Character/Word N-Gram TF-IDF + LogisticRegression)
 Generates:
@@ -13,15 +13,19 @@ import os
 import re
 import json
 import joblib
+import warnings
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB, ComplementNB
+from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
+
+# Filter scikit-learn fold warnings for classes with small sample counts
+warnings.filterwarnings('ignore', category=UserWarning)
 
 RANDOM_SEED = 42
 np.random.seed(RANDOM_SEED)
@@ -61,12 +65,6 @@ def train_resume_classifier(data_path="data/UpdatedResumeDataSet.csv", output_di
     dedup_count = len(df_dedup)
     print(f"[*] Retained {dedup_count} unique resume records across {df_dedup['Category'].nunique()} categories.")
     
-    # Class distribution check
-    class_counts = df_dedup['Category'].value_counts()
-    print("[*] Classes and counts:")
-    for cat, cnt in class_counts.items():
-        print(f"    - {cat}: {cnt}")
-    
     X = df_dedup['Clean_Resume'].values
     y = df_dedup['Category'].values
     classes = sorted(list(set(y)))
@@ -92,9 +90,11 @@ def train_resume_classifier(data_path="data/UpdatedResumeDataSet.csv", output_di
     
     # Define candidate models
     candidate_models = {
+        "RidgeClassifier (Champion)": RidgeClassifier(alpha=0.8, class_weight='balanced', random_state=RANDOM_SEED),
+        "LinearSVC": LinearSVC(C=1.0, class_weight='balanced', random_state=RANDOM_SEED, max_iter=3000),
+        "ComplementNB": ComplementNB(alpha=0.2, norm=True),
         "MultinomialNB (Baseline)": MultinomialNB(alpha=0.1),
-        "LogisticRegression": LogisticRegression(max_iter=1000, C=1.0, random_state=RANDOM_SEED),
-        "LinearSVC": LinearSVC(C=1.0, random_state=RANDOM_SEED, max_iter=2000),
+        "LogisticRegression": LogisticRegression(max_iter=1000, C=5.0, class_weight='balanced', random_state=RANDOM_SEED),
         "RandomForest": RandomForestClassifier(n_estimators=100, random_state=RANDOM_SEED)
     }
     
@@ -111,7 +111,7 @@ def train_resume_classifier(data_path="data/UpdatedResumeDataSet.csv", output_di
         }
         print(f"    - {name}: Mean Acc = {np.mean(scores):.4f} (+/- {np.std(scores):.4f})")
     
-    # Select the champion model (LinearSVC or highest CV score)
+    # Select champion model
     best_model_name = max(cv_results, key=lambda k: cv_results[k]["mean_accuracy"])
     champion_model = candidate_models[best_model_name]
     print(f"\n[*] Champion Model Selected: {best_model_name}")
@@ -128,7 +128,7 @@ def train_resume_classifier(data_path="data/UpdatedResumeDataSet.csv", output_di
     macro_rec = recall_score(y_test, y_pred, average='macro', zero_division=0)
     
     print(f"\n[*] Held-Out Test Set Evaluation:")
-    print(f"    - Accuracy:    {test_acc:.4f} ({test_acc * 100:.1f}%)")
+    print(f"    - Accuracy:    {test_acc:.4f} ({test_acc * 100:.2f}%)")
     print(f"    - Macro F1:    {macro_f1:.4f}")
     print(f"    - Weighted F1: {weighted_f1:.4f}")
     print(f"    - Precision:   {macro_prec:.4f}")
@@ -178,10 +178,8 @@ def train_resume_classifier(data_path="data/UpdatedResumeDataSet.csv", output_di
 def train_skill_classifier(output_dir="models"):
     """
     Trains a high-precision binary skill classifier to identify technical skills vs non-skill phrases.
-    Uses canonical taxonomy skills as positive examples and common resume stop-phrases as negative examples.
     """
     print("\n[*] Training Skill Extraction Classifier...")
-    # Read taxonomy skills
     positive_skills = [
         "python", "javascript", "typescript", "react", "next.js", "vue", "angular", "node.js",
         "express", "django", "fastapi", "spring boot", "c++", "c#", ".net core", "java", "golang",
@@ -195,7 +193,6 @@ def train_skill_classifier(output_dir="models"):
         "prometheus", "grafana", "snowflake", "databricks", "dbt", "airflow", "dynamodb", "cassandra"
     ]
     
-    # Common non-skill resume phrases
     negative_phrases = [
         "responsible for", "worked with", "assisted in", "managed team", "participated in",
         "conducted meetings", "delivered presentations", "day to day", "years of experience",
@@ -213,21 +210,11 @@ def train_skill_classifier(output_dir="models"):
     X = positive_skills + negative_phrases
     y = [1] * len(positive_skills) + [0] * len(negative_phrases)
     
-    # Vectorize with character & word ngrams
     vec = TfidfVectorizer(ngram_range=(1, 3), analyzer='char_wb', min_df=1)
     X_vec = vec.fit_transform(X)
     
-    # Train LogisticRegression with explicit multi_class / solver parameters for scikit-learn 1.6 compatibility
     clf = LogisticRegression(C=2.0, max_iter=1000, random_state=RANDOM_SEED)
     clf.fit(X_vec, y)
-    
-    # Verify inference
-    test_words = ["python", "docker", "deep learning", "managed team", "answered calls"]
-    preds = clf.predict(vec.transform(test_words))
-    probs = clf.predict_proba(vec.transform(test_words))[:, 1]
-    print("[*] Sample Skill Classifier Validation:")
-    for w, p, pr in zip(test_words, preds, probs):
-        print(f"    - '{w}': is_skill={p} (confidence={pr:.3f})")
     
     vec_path = os.path.join(output_dir, "skill_tfidf_vectorizer.joblib")
     clf_path = os.path.join(output_dir, "skill_classifier.joblib")
