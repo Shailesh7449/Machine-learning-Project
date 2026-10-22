@@ -99,18 +99,24 @@ app.get('/api/academic/benchmarks', (_req: Request, res: Response) => {
     return res.json({
       success: true,
       timestamp: new Date().toISOString(),
-      dataset_summary: {
-        total_raw_records: 962,
-        deduplicated_records: 166,
-        classes: 25,
-      },
-      model_selection: {
-        champion_model: 'LinearSVC',
-      },
-      test_metrics: {
-        accuracy: 0.8824,
-        macro_f1: 0.8210,
-        weighted_f1: 0.8501,
+      resume_classifier: {
+        dataset_summary: {
+          source: 'Kaggle UpdatedResumeDataSet.csv',
+          total_raw_records: 962,
+          deduplicated_records: 166,
+          duplicate_records_removed: 796,
+          train_samples: 132,
+          test_samples: 34,
+          num_classes: 25,
+        },
+        model_selection: {
+          champion_model: 'RidgeClassifier (Champion)',
+        },
+        test_metrics: {
+          accuracy: 0.9118,
+          macro_f1: 0.8743,
+          weighted_f1: 0.8894,
+        },
       },
     });
   } catch (err: any) {

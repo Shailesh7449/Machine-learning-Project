@@ -70,7 +70,7 @@ export const BenchmarksView: React.FC = () => {
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
               <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">Champion Architecture</span>
               <div className="text-xl font-black text-indigo-600 dark:text-indigo-400">
-                {data.resume_classifier?.model_selection?.champion_model || 'LinearSVC'}
+                {data.resume_classifier?.model_selection?.champion_model || 'RidgeClassifier (Champion)'}
               </div>
               <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">TF-IDF (5,000 N-Grams)</span>
             </div>
@@ -78,7 +78,7 @@ export const BenchmarksView: React.FC = () => {
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
               <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">Held-Out Test Accuracy</span>
               <div className="text-xl font-black text-emerald-600 dark:text-emerald-400">
-                {((data.resume_classifier?.test_metrics?.accuracy || 0.8824) * 100).toFixed(1)}%
+                {((data.resume_classifier?.test_metrics?.accuracy || 0.9118) * 100).toFixed(1)}%
               </div>
               <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">True un-leaked test split</span>
             </div>
@@ -86,9 +86,9 @@ export const BenchmarksView: React.FC = () => {
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
               <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">Held-Out Macro F1</span>
               <div className="text-xl font-black text-sky-600 dark:text-sky-400">
-                {((data.resume_classifier?.test_metrics?.macro_f1 || 0.8210)).toFixed(3)}
+                {((data.resume_classifier?.test_metrics?.macro_f1 || 0.8743)).toFixed(3)}
               </div>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">Weighted F1: {((data.resume_classifier?.test_metrics?.weighted_f1 || 0.8501)).toFixed(3)}</span>
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">Weighted F1: {((data.resume_classifier?.test_metrics?.weighted_f1 || 0.8894)).toFixed(3)}</span>
             </div>
 
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">

@@ -1,0 +1,9 @@
+Alex Johnson
+alex@example.com
+Summary: Senior Python Developer with 6 years experience in FastAPI, Django, PostgreSQL, Docker, AWS.
+Skills: Python, Django, FastAPI, Docker, PostgreSQL, Redis, Git, Linux.
+Experience:
+Senior Python Developer - TechCorp (2020-2024)
+Built REST APIs with FastAPI and Django, decreasing latency by 35%.
+Education:
+B.S. in Computer Science - University of California (2016-2020)

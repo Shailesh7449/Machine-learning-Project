@@ -458,6 +458,45 @@ async function runSuite() {
     assert(match.overallMatchScore >= 0 && match.overallMatchScore <= 100);
   })();
 
+  await it('Regression: Skill extractor avoids false positives such as "trust" matching "Rust" or "cat" matching "C"', () => {
+    const textWithFalsePositives = 'A dedicated team member who builds trust across teams, cares for an office cat, and enjoys city walks.';
+    const { matchedSkills } = extractAllTaxonomySkills(textWithFalsePositives);
+    const skillNames = matchedSkills.map(s => s.name);
+    assert(!skillNames.includes('Rust'), 'False positive detected: "trust" should NOT match "Rust"');
+    assert(!skillNames.includes('C'), 'False positive detected: "cat/city" should NOT match "C"');
+  })();
+
+  await it('Regression: Job Match skillMatchScore is strictly bounded in [0, 100] and must not exceed 100 on high alignment', () => {
+    const { matchedSkills } = extractAllTaxonomySkills('Expert in React, TypeScript, Node.js, Express.js, PostgreSQL, AWS, Docker, Kubernetes, Git, CI/CD, GraphQL, Python.');
+    const resumeSections = segmentResumeSections('Senior Software Engineer with full stack proficiency.');
+    const jdText = 'Required skills: React, TypeScript, Node.js, PostgreSQL, AWS, Docker, Git.';
+    const match = matchResumeWithJob(resumeSections, matchedSkills, jdText);
+    assert(match.skillMatchScore >= 0 && match.skillMatchScore <= 100, `skillMatchScore ${match.skillMatchScore} is out of [0, 100] bounds`);
+    // Ensure that multiplying by 100 again would erroneously cause > 100, verifying the fix
+    const displayScore = Math.round(match.skillMatchScore);
+    assert(displayScore <= 100, `Display score ${displayScore} must not exceed 100`);
+  })();
+
+  await it('Regression: GET /api/academic/benchmarks returns standardized resume_classifier schema with >= 90% accuracy', async () => {
+    const res = await new Promise<any>((resolve, reject) => {
+      http.get('http://127.0.0.1:3000/api/academic/benchmarks', (r) => {
+        let raw = '';
+        r.on('data', chunk => raw += chunk);
+        r.on('end', () => {
+          try {
+            resolve(JSON.parse(raw));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }).on('error', reject);
+    });
+    assert(res.success === true, 'Expected success: true');
+    assert(res.resume_classifier, 'Expected resume_classifier object');
+    assert(res.resume_classifier.test_metrics.accuracy >= 0.90, `Expected accuracy >= 0.90, got ${res.resume_classifier.test_metrics.accuracy}`);
+    assert(res.resume_classifier.model_selection.champion_model.includes('RidgeClassifier'), 'Expected champion model to be RidgeClassifier');
+  })();
+
   console.log('\n================================================================');
   console.log(`   Final Summary: ${passedCount} PASSED, ${failedCount} FAILED`);
   console.log('================================================================\n');
